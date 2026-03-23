@@ -1,0 +1,1168 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>KeepKul - Manajemen Stok Dapur (Beta-Testing)</title>
+    <style>
+        /* ============================================
+           CSS STYLING - CLEAN & USER FRIENDLY
+           ============================================ */
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background: linear-gradient(135deg, #e3f2fd 0%, #bbdefb 50%, #90caf9 100%);
+            min-height: 100vh;
+            padding: 20px;
+            color: #1a237e;
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 700px;
+            margin: 0 auto;
+        }
+
+        /* HEADER */
+        .header {
+            text-align: center;
+            margin-bottom: 24px;
+            padding: 20px;
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 4px 20px rgba(21, 101, 192, 0.1);
+        }
+
+        .header h1 {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: #1565c0;
+            margin-bottom: 4px;
+        }
+
+        .header p {
+            font-size: 0.9rem;
+            color: #5c6bc0;
+        }
+
+        /* CARD STYLE */
+        .card {
+            background: #ffffff;
+            border-radius: 16px;
+            padding: 24px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 20px rgba(21, 101, 192, 0.1);
+        }
+
+        .card-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: #1565c0;
+            margin-bottom: 20px;
+            padding-bottom: 12px;
+            border-bottom: 2px solid #e3f2fd;
+        }
+
+        /* STATS BAR */
+        .stats-bar {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+
+        .stat-card {
+            background: linear-gradient(135deg, #e3f2fd 0%, #bbdefb 100%);
+            border-radius: 12px;
+            padding: 16px;
+            text-align: center;
+        }
+
+        .stat-number {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: #1565c0;
+        }
+
+        .stat-number.warning {
+            color: #f57c00;
+        }
+
+        .stat-number.expired {
+            color: #e53935;
+        }
+
+        .stat-label {
+            font-size: 0.7rem;
+            color: #5c6bc0;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-top: 4px;
+        }
+
+        /* PANDUAN */
+        .guidelines {
+            background: #e8f4fd;
+            padding: 16px;
+            border-radius: 12px;
+            border-left: 4px solid #42a5f5;
+            font-size: 0.85rem;
+            line-height: 1.8;
+            margin-bottom: 20px;
+        }
+
+        .guidelines strong {
+            color: #1565c0;
+        }
+
+        .guidelines .example {
+            background: #fff;
+            padding: 12px 16px;
+            border-radius: 8px;
+            margin-top: 12px;
+            color: #1976d2;
+            font-family: 'Courier New', monospace;
+            font-size: 0.85rem;
+            border: 1px solid #bbdefb;
+        }
+
+        /* KONTROL */
+        .controls {
+            display: flex;
+            justify-content: center;
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+
+        button {
+            padding: 14px 28px;
+            border: none;
+            border-radius: 50px;
+            font-size: 0.95rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        #btn-record {
+            background: linear-gradient(135deg, #42a5f5 0%, #1976d2 100%);
+            color: white;
+            min-width: 160px;
+        }
+
+        #btn-record.recording {
+            background: linear-gradient(135deg, #ef5350 0%, #e53935 100%);
+            animation: pulse 1.5s infinite;
+        }
+
+        #btn-retry {
+            background: #e0e0e0;
+            color: #424242;
+        }
+
+        #btn-save {
+            background: linear-gradient(135deg, #66bb6a 0%, #43a047 100%);
+            color: white;
+        }
+
+        #btn-clear {
+            background: #ffcdd2;
+            color: #c62828;
+            font-size: 0.8rem;
+            padding: 8px 16px;
+            border-radius: 8px;
+        }
+
+        #btn-clear:hover {
+            background: #ef9a9a;
+        }
+
+        /* TRANSCRIPT */
+        .transcript-box {
+            background: #f5f9ff;
+            padding: 16px;
+            border-radius: 12px;
+            border: 1px solid #bbdefb;
+            margin-bottom: 20px;
+        }
+
+        .transcript-label {
+            font-size: 0.7rem;
+            color: #7986cb;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 8px;
+        }
+
+        .transcript-text {
+            color: #1565c0;
+            font-size: 1rem;
+            min-height: 24px;
+        }
+
+        /* FORM */
+        .form-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+            margin-bottom: 20px;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .form-group.full-width {
+            grid-column: span 2;
+        }
+
+        label {
+            font-size: 0.75rem;
+            font-weight: 600;
+            color: #5c6bc0;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 8px;
+        }
+
+        input, select {
+            padding: 14px;
+            border: 1px solid #bbdefb;
+            border-radius: 10px;
+            font-size: 0.95rem;
+            background: #fafafa;
+            transition: all 0.3s;
+            color: #1a237e;
+        }
+
+        input:focus, select:focus {
+            outline: none;
+            border-color: #42a5f5;
+            background: #fff;
+            box-shadow: 0 0 0 3px rgba(66, 165, 245, 0.15);
+        }
+
+        input::placeholder {
+            color: #90a4ae;
+        }
+
+        /* STATUS */
+        .status-msg {
+            text-align: center;
+            padding: 12px;
+            border-radius: 8px;
+            font-size: 0.9rem;
+            font-weight: 500;
+        }
+
+        .error {
+            background: #ffebee;
+            color: #c62828;
+            border: 1px solid #ffcdd2;
+        }
+
+        .success {
+            background: #e8f5e9;
+            color: #2e7d32;
+            border: 1px solid #c8e6c9;
+        }
+
+        /* INVENTORY LIST */
+        .inventory-list {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .inventory-item {
+            background: #f5f9ff;
+            border-radius: 12px;
+            padding: 16px;
+            border-left: 4px solid #42a5f5;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: all 0.3s;
+        }
+
+        .inventory-item:hover {
+            box-shadow: 0 4px 12px rgba(66, 165, 245, 0.15);
+            transform: translateX(4px);
+        }
+
+        .inventory-item.expired {
+            border-left-color: #ef5350;
+            background: #ffebee;
+        }
+
+        .inventory-item.warning {
+            border-left-color: #ffb74d;
+            background: #fff3e0;
+        }
+
+        .item-info {
+            flex: 1;
+        }
+
+        .item-info h4 {
+            font-size: 1rem;
+            color: #1565c0;
+            margin-bottom: 6px;
+            font-weight: 600;
+        }
+
+        .item-info p {
+            font-size: 0.8rem;
+            color: #7986cb;
+        }
+
+        .item-meta {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .countdown-badge {
+            display: inline-block;
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            white-space: nowrap;
+        }
+
+        .countdown-badge.safe {
+            background: #e8f5e9;
+            color: #2e7d32;
+        }
+
+        .countdown-badge.warning {
+            background: #fff3e0;
+            color: #f57c00;
+        }
+
+        .countdown-badge.expired {
+            background: #ffebee;
+            color: #c62828;
+        }
+
+        .item-delete {
+            background: none;
+            border: 1px solid #ef5350;
+            color: #ef5350;
+            cursor: pointer;
+            padding: 6px 12px;
+            font-size: 0.85rem;
+            border-radius: 6px;
+            font-weight: 500;
+            transition: all 0.3s;
+        }
+
+        .item-delete:hover {
+            background: #ef5350;
+            color: white;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 40px 20px;
+            color: #90a4ae;
+        }
+
+        .empty-state-icon {
+            font-size: 3rem;
+            margin-bottom: 12px;
+            color: #bbdefb;
+        }
+
+        .empty-state p {
+            font-size: 0.95rem;
+        }
+
+        .empty-state small {
+            font-size: 0.8rem;
+            color: #b0bec5;
+        }
+
+        /* SAVE BUTTON */
+        .save-section {
+            margin-top: 20px;
+        }
+
+        #btn-save {
+            width: 100%;
+            padding: 16px;
+            font-size: 1rem;
+        }
+
+        /* ANIMATION */
+        @keyframes pulse {
+            0% { transform: scale(1); box-shadow: 0 0 0 0 rgba(239, 83, 80, 0.4); }
+            70% { transform: scale(1.02); box-shadow: 0 0 0 10px rgba(239, 83, 80, 0); }
+            100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(239, 83, 80, 0); }
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .inventory-item {
+            animation: fadeIn 0.3s ease;
+        }
+
+        /* RECORDING INDICATOR */
+        .recording-indicator {
+            display: none;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            color: #e53935;
+            font-size: 0.85rem;
+            margin-bottom: 12px;
+        }
+
+        .recording-indicator.active {
+            display: flex;
+        }
+
+        .recording-dot {
+            width: 10px;
+            height: 10px;
+            background: #e53935;
+            border-radius: 50%;
+            animation: blink 1s infinite;
+        }
+
+        @keyframes blink {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.3; }
+        }
+
+        /* RESPONSIVE */
+        @media (max-width: 480px) {
+            .form-grid {
+                grid-template-columns: 1fr;
+            }
+            .form-group.full-width {
+                grid-column: span 1;
+            }
+            .stats-bar {
+                grid-template-columns: 1fr;
+            }
+            .inventory-item {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 12px;
+            }
+            .item-meta {
+                width: 100%;
+                justify-content: space-between;
+            }
+            .controls {
+                flex-direction: column;
+            }
+            #btn-record, #btn-retry {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <!-- HEADER -->
+        <div class="header">
+            <h1>KeepKul</h1>
+            <p>Manajemen Stok Dapur (Beta-Testing Voice)</p>
+        </div>
+
+        <!-- STATS BAR -->
+        <div class="stats-bar">
+            <div class="stat-card">
+                <div class="stat-number" id="stat-total">0</div>
+                <div class="stat-label">Total Item</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number warning" id="stat-warning">0</div>
+                <div class="stat-label">Segera Habis</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number expired" id="stat-expired">0</div>
+                <div class="stat-label">Kadaluarsa</div>
+            </div>
+        </div>
+
+        <!-- INPUT CARD -->
+        <div class="card">
+            <div class="card-title">Input Produk Baru</div>
+            
+            <div class="guidelines">
+                <strong>Cara Menggunakan:</strong><br>
+                1. Klik tombol "Mulai Rekam"<br>
+                2. Ucapkan nama produk, kategori, jumlah, satuan, dan tanggal expired<br>
+                3. Edit hasil jika perlu, lalu klik "Simpan"<br><br>
+                <strong>Format:</strong> [Nama Produk] [Kategori] [Jumlah] [Satuan] [Tanggal]<br><br>
+                <strong>Kategori:</strong> susu, daging, sayuran, roti, minuman, lainnya<br>
+                <strong>Satuan:</strong> pcs, porsi, kilogram, gram, mililiter, liter<br>
+                <div class="example">
+                    Contoh: "Ultra Milk susu 1000 mililiter 15 April 2026"
+                </div>
+            </div>
+
+            <div class="controls">
+                <button id="btn-record">Mulai Rekam</button>
+                <button id="btn-retry" style="display: none;">Ulangi Rekaman</button>
+            </div>
+
+            <div class="recording-indicator" id="recording-indicator">
+                <span class="recording-dot"></span>
+                <span>Sedang merekam...</span>
+            </div>
+
+            <div class="transcript-box">
+                <div class="transcript-label">Hasil Rekaman Suara</div>
+                <div class="transcript-text" id="transcript-display">Klik "Mulai Rekam" dan ucapkan produk Anda</div>
+            </div>
+
+            <div class="form-grid">
+                <div class="form-group full-width">
+                    <label>Nama Produk</label>
+                    <input type="text" id="out-name" placeholder="Masukkan nama produk">
+                </div>
+                
+                <div class="form-group">
+                    <label>Kategori</label>
+                    <select id="out-category">
+                        <option value="">Pilih kategori</option>
+                        <option value="susu">Susu</option>
+                        <option value="daging">Daging</option>
+                        <option value="sayuran">Sayuran</option>
+                        <option value="roti">Roti</option>
+                        <option value="minuman">Minuman</option>
+                        <option value="lainnya">Lainnya</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label>Jumlah</label>
+                    <input type="text" id="out-amount" placeholder="Contoh: 1000">
+                </div>
+                
+                <div class="form-group">
+                    <label>Satuan</label>
+                    <select id="out-unit">
+                        <option value="">Pilih satuan</option>
+                        <option value="pcs">Pcs</option>
+                        <option value="porsi">Porsi</option>
+                        <option value="kg">Kilogram (kg)</option>
+                        <option value="g">Gram (g)</option>
+                        <option value="ml">Mililiter (ml)</option>
+                        <option value="l">Liter (l)</option>
+                    </select>
+                </div>
+                
+                <div class="form-group full-width">
+                    <label>Tanggal Expired</label>
+                    <input type="date" id="out-date">
+                </div>
+            </div>
+
+            <div class="save-section">
+                <button id="btn-save" style="display: none;">Simpan ke Inventory</button>
+            </div>
+
+            <div id="status-msg" class="status-msg" style="display: none;"></div>
+        </div>
+
+        <!-- INVENTORY CARD -->
+        <div class="card">
+            <div class="card-title">
+                Inventory Produk
+                <button id="btn-clear" style="float: right;">Hapus Semua</button>
+            </div>
+            
+            <div class="inventory-list" id="inventory-list">
+                <!-- Items will be loaded here -->
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // ============================================
+        // KONFIGURASI - KATEGORI DAN SATUAN
+        // ============================================
+        
+        const KATEGORI = {
+            'susu': 'susu', 'dairy': 'susu',
+            'daging': 'daging', 'meat': 'daging',
+            'sayuran': 'sayuran', 'vegetables': 'sayuran',
+            'roti': 'roti', 'bakery': 'roti',
+            'minuman': 'minuman', 'drinks': 'minuman',
+            'lainnya': 'lainnya', 'others': 'lainnya'
+        };
+
+        const SATUAN = {
+            'pcs': 'pcs', 'porsi': 'porsi', 'portions': 'porsi',
+            'kilogram': 'kg', 'kg': 'kg',
+            'gram': 'g', 'g': 'g',
+            'mililiter': 'ml', 'ml': 'ml',
+            'liter': 'l', 'l': 'l'
+        };
+
+        const ANGKA_MAP = {
+            'nol': 0, 'satu': 1, 'dua': 2, 'tiga': 3, 'empat': 4, 'lima': 5,
+            'enam': 6, 'tujuh': 7, 'delapan': 8, 'sembilan': 9, 'sepuluh': 10,
+            'sebelas': 11, 'dua belas': 12, 'tiga belas': 13, 'empat belas': 14,
+            'lima belas': 15, 'enam belas': 16, 'tujuh belas': 17,
+            'delapan belas': 18, 'sembilan belas': 19,
+            'dua puluh': 20, 'tiga puluh': 30, 'empat puluh': 40,
+            'lima puluh': 50, 'enam puluh': 60, 'tujuh puluh': 70,
+            'delapan puluh': 80, 'sembilan puluh': 90,
+            'seratus': 100, 'dua ratus': 200, 'tiga ratus': 300,
+            'empat ratus': 400, 'lima ratus': 500, 'enam ratus': 600,
+            'tujuh ratus': 700, 'delapan ratus': 800, 'sembilan ratus': 900,
+            'seribu': 1000, 'dua ribu': 2000, 'tiga ribu': 3000,
+            'empat ribu': 4000, 'lima ribu': 5000, 'sepuluh ribu': 10000,
+            'seratus ribu': 100000, 'sejuta': 1000000
+        };
+
+        // ============================================
+        // LOCAL STORAGE KEY
+        // ============================================
+        
+        const STORAGE_KEY = 'keepkul_inventory_v2';
+
+        // ============================================
+        // ELEMEN DOM
+        // ============================================
+        
+        const btnRecord = document.getElementById('btn-record');
+        const btnRetry = document.getElementById('btn-retry');
+        const btnSave = document.getElementById('btn-save');
+        const btnClear = document.getElementById('btn-clear');
+        const transcriptDisplay = document.getElementById('transcript-display');
+        const statusMsg = document.getElementById('status-msg');
+        const inventoryList = document.getElementById('inventory-list');
+        const recordingIndicator = document.getElementById('recording-indicator');
+        
+        const outName = document.getElementById('out-name');
+        const outCategory = document.getElementById('out-category');
+        const outAmount = document.getElementById('out-amount');
+        const outUnit = document.getElementById('out-unit');
+        const outDate = document.getElementById('out-date');
+        
+        const statTotal = document.getElementById('stat-total');
+        const statWarning = document.getElementById('stat-warning');
+        const statExpired = document.getElementById('stat-expired');
+
+        // ============================================
+        // STATE & DATA
+        // ============================================
+        
+        let inventory = [];
+        let finalTranscript = '';
+        let recognition = null;
+        let isRecording = false;
+
+        // ============================================
+        // INITIALIZATION
+        // ============================================
+        
+        function init() {
+            loadInventory();
+            renderInventory();
+            updateStats();
+            setupSpeechRecognition();
+            setupEventListeners();
+            
+            // Update countdown setiap menit
+            setInterval(() => {
+                renderInventory();
+                updateStats();
+            }, 60000);
+        }
+
+        function setupSpeechRecognition() {
+            const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+            
+            if (SpeechRecognition) {
+                recognition = new SpeechRecognition();
+                recognition.lang = 'id-ID';
+                recognition.continuous = false;
+                recognition.interimResults = true;
+                
+                recognition.onstart = function() {
+                    isRecording = true;
+                    btnRecord.classList.add('recording');
+                    btnRecord.innerText = 'Merekam...';
+                    recordingIndicator.classList.add('active');
+                };
+                
+                recognition.onend = function() {
+                    isRecording = false;
+                    btnRecord.classList.remove('recording');
+                    btnRecord.innerText = 'Mulai Rekam';
+                    recordingIndicator.classList.remove('active');
+                    btnRetry.style.display = 'inline-block';
+                    btnSave.style.display = 'inline-block';
+
+                    if (finalTranscript.trim()) {
+                        prosesTeks(finalTranscript.trim());
+                        tampilkanSukses('Data berhasil diproses. Silakan edit jika perlu.');
+                    } else {
+                        tampilkanError('Tidak ada suara terdeteksi. Silakan coba lagi.');
+                    }
+                };
+                
+                recognition.onresult = function(event) {
+                    let interimTranscript = '';
+                    
+                    for (let i = event.resultIndex; i < event.results.length; i++) {
+                        const transcript = event.results[i][0].transcript;
+                        if (event.results[i].isFinal) {
+                            finalTranscript += transcript;
+                        } else {
+                            interimTranscript += transcript;
+                        }
+                    }
+                    
+                    transcriptDisplay.innerText = finalTranscript + interimTranscript || 'Mendengarkan...';
+                };
+                
+                recognition.onerror = function(event) {
+                    isRecording = false;
+                    btnRecord.classList.remove('recording');
+                    btnRecord.innerText = 'Mulai Rekam';
+                    recordingIndicator.classList.remove('active');
+                    btnRetry.style.display = 'inline-block';
+                    
+                    if (event.error === 'not-allowed') {
+                        tampilkanError('Izin mikrofon ditolak. Mohon izinkan akses mikrofon di browser Anda.');
+                    } else if (event.error === 'no-speech') {
+                        tampilkanError('Tidak ada suara yang terdeteksi. Pastikan mikrofon berfungsi.');
+                    } else {
+                        tampilkanError('Terjadi kesalahan: ' + event.error);
+                    }
+                };
+            } else {
+                tampilkanError('Browser Anda tidak mendukung fitur suara. Gunakan Google Chrome.');
+                btnRecord.disabled = true;
+                btnRecord.innerText = 'Tidak Didukung';
+            }
+        }
+
+        function setupEventListeners() {
+            btnRecord.addEventListener('click', mulaiRekam);
+            btnRetry.addEventListener('click', resetInput);
+            btnSave.addEventListener('click', simpanKeInventory);
+            btnClear.addEventListener('click', hapusSemuaInventory);
+        }
+
+        // ============================================
+        // SPEECH RECOGNITION FUNCTIONS
+        // ============================================
+
+        function mulaiRekam() {
+            if (!recognition) {
+                tampilkanError('Fitur suara tidak didukung browser ini.');
+                return;
+            }
+            
+            if (isRecording) {
+                recognition.stop();
+                return;
+            }
+            
+            resetForm();
+            finalTranscript = '';
+            transcriptDisplay.innerText = 'Mendengarkan...';
+            statusMsg.style.display = 'none';
+
+            try {
+                recognition.start();
+            } catch (e) {
+                console.error('Error mulai rekam:', e);
+                tampilkanError('Gagal memulai rekaman. Coba lagi.');
+            }
+        }
+
+        // ============================================
+        // TEXT PROCESSING
+        // ============================================
+
+        function prosesTeks(teksMentah) {
+            let teks = teksMentah.toLowerCase().trim();
+            teks = teks.replace(/[^a-z0-9\s]/g, ' ');
+            teks = teks.replace(/\s+/g, ' ').trim();
+            
+            const kata = teks.split(' ').filter(k => k.length > 0);
+            
+            let indeksKategori = -1;
+            let indeksSatuan = -1;
+            let kategoriDitemukan = '';
+            let satuanDitemukan = '';
+            
+            // Cari kategori
+            for (let i = 0; i < kata.length; i++) {
+                if (KATEGORI[kata[i]]) {
+                    indeksKategori = i;
+                    kategoriDitemukan = KATEGORI[kata[i]];
+                    break;
+                }
+            }
+            
+            // Cari satuan
+            for (let i = 0; i < kata.length; i++) {
+                if (SATUAN[kata[i]]) {
+                    indeksSatuan = i;
+                    satuanDitemukan = SATUAN[kata[i]];
+                    break;
+                }
+            }
+            
+            let namaProduk = '';
+            let kategori = '';
+            let jumlah = '';
+            let satuan = '';
+            let tanggalExpired = '';
+            
+            // Parse nama produk (sebelum kategori)
+            if (indeksKategori !== -1) {
+                namaProduk = kata.slice(0, indeksKategori).join(' ');
+                kategori = kategoriDitemukan;
+            }
+            
+            // Parse satuan dan jumlah
+            if (indeksSatuan !== -1) {
+                satuan = satuanDitemukan;
+                
+                if (indeksKategori !== -1 && indeksSatuan > indeksKategori) {
+                    const kataJumlah = kata.slice(indeksKategori + 1, indeksSatuan);
+                    jumlah = konversiAngka(kataJumlah.join(' '));
+                }
+                
+                // Parse tanggal (setelah satuan)
+                const kataTanggal = kata.slice(indeksSatuan + 1);
+                tanggalExpired = parseTanggal(kataTanggal.join(' '));
+            } else if (indeksKategori !== -1) {
+                // Jika tidak ada satuan, coba parse setelah kategori
+                const setelahKategori = kata.slice(indeksKategori + 1);
+                
+                let idxAngka = 0;
+                let strAngka = '';
+                for (let i = 0; i < setelahKategori.length; i++) {
+                    const konversi = konversiAngka(setelahKategori[i]);
+                    if (konversi.match(/^\d+$/)) {
+                        strAngka += konversi + ' ';
+                        idxAngka = i + 1;
+                    } else {
+                        break;
+                    }
+                }
+                jumlah = strAngka.trim();
+                
+                const sisaKata = setelahKategori.slice(idxAngka);
+                tanggalExpired = parseTanggal(sisaKata.join(' '));
+            }
+            
+            // Update form
+            outName.value = kapitalisasi(namaProduk);
+            outCategory.value = kategori;
+            outAmount.value = jumlah;
+            outUnit.value = satuan;
+            outDate.value = tanggalExpired;
+        }
+
+        function konversiAngka(teks) {
+            let hasil = teks.trim();
+            const kunciUrut = Object.keys(ANGKA_MAP).sort((a, b) => b.length - a.length);
+            
+            for (const kunci of kunciUrut) {
+                const regex = new RegExp('\\b' + kunci + '\\b', 'gi');
+                hasil = hasil.replace(regex, ANGKA_MAP[kunci]);
+            }
+            
+            hasil = hasil.replace(/[^0-9\s]/g, '').trim();
+            return hasil;
+        }
+
+        function parseTanggal(teks) {
+            if (!teks || teks.trim() === '') {
+                const tanggal = new Date();
+                tanggal.setDate(tanggal.getDate() + 30);
+                return formatTanggalISO(tanggal);
+            }
+            
+            const kata = teks.toLowerCase().split(' ').filter(k => k.length > 0);
+            
+            const BULAN_MAP = {
+                'januari': 0, 'jan': 0, 'februari': 1, 'feb': 1,
+                'maret': 2, 'mar': 2, 'april': 3, 'apr': 3,
+                'mei': 4, 'juni': 5, 'jun': 5, 'juli': 6, 'jul': 6,
+                'agustus': 7, 'agu': 7, 'aug': 7, 'september': 8, 'sep': 8,
+                'oktober': 9, 'okt': 9, 'november': 10, 'nov': 10,
+                'desember': 11, 'des': 11
+            };
+            
+            let hari = null, bulan = null, tahun = null;
+            
+            for (const k of kata) {
+                const angka = parseInt(k);
+                if (!isNaN(angka) && angka >= 1 && angka <= 31 && hari === null) {
+                    hari = angka;
+                }
+                if (BULAN_MAP[k] !== undefined) {
+                    bulan = BULAN_MAP[k];
+                }
+                if (!isNaN(angka) && angka >= 2020 && angka <= 2035) {
+                    tahun = angka;
+                }
+                if (!isNaN(angka) && angka >= 24 && angka <= 35 && tahun === null) {
+                    tahun = 2000 + angka;
+                }
+            }
+            
+            if (hari && bulan !== null && tahun) {
+                const tanggal = new Date(tahun, bulan, hari);
+                return formatTanggalISO(tanggal);
+            }
+            
+            const tanggalDefault = new Date();
+            tanggalDefault.setDate(tanggalDefault.getDate() + 30);
+            return formatTanggalISO(tanggalDefault);
+        }
+
+        function formatTanggalISO(tanggal) {
+            const tahun = tanggal.getFullYear();
+            const bulan = String(tanggal.getMonth() + 1).padStart(2, '0');
+            const hari = String(tanggal.getDate()).padStart(2, '0');
+            return tahun + '-' + bulan + '-' + hari;
+        }
+
+        function kapitalisasi(teks) {
+            if (!teks || teks.trim() === '') return '';
+            return teks.charAt(0).toUpperCase() + teks.slice(1).toLowerCase();
+        }
+
+        // ============================================
+        // INVENTORY MANAGEMENT
+        // ============================================
+
+        function loadInventory() {
+            try {
+                const stored = localStorage.getItem(STORAGE_KEY);
+                if (stored) {
+                    inventory = JSON.parse(stored);
+                }
+            } catch (e) {
+                console.error('Error load inventory:', e);
+                inventory = [];
+            }
+        }
+
+        function saveInventory() {
+            try {
+                localStorage.setItem(STORAGE_KEY, JSON.stringify(inventory));
+            } catch (e) {
+                console.error('Error save inventory:', e);
+                tampilkanError('Gagal menyimpan data. Storage penuh?');
+            }
+        }
+
+        function simpanKeInventory() {
+            const nama = outName.value.trim();
+            const kategori = outCategory.value;
+            const jumlah = outAmount.value.trim();
+            const satuan = outUnit.value;
+            const expired = outDate.value;
+            
+            if (!nama) {
+                tampilkanError('Nama produk wajib diisi.');
+                return;
+            }
+            
+            if (!expired) {
+                tampilkanError('Tanggal expired wajib diisi.');
+                return;
+            }
+            
+            const item = {
+                id: Date.now(),
+                nama: nama,
+                kategori: kategori || 'lainnya',
+                jumlah: jumlah || '1',
+                satuan: satuan || 'pcs',
+                expired: expired,
+                createdAt: new Date().toISOString()
+            };
+            
+            inventory.unshift(item);
+            saveInventory();
+            
+            renderInventory();
+            updateStats();
+            
+            tampilkanSukses('Produk berhasil disimpan!');
+            resetInput();
+        }
+
+        function hapusItem(id) {
+            inventory = inventory.filter(function(item) {
+                return item.id !== id;
+            });
+            saveInventory();
+            renderInventory();
+            updateStats();
+        }
+
+        function hapusSemuaInventory() {
+            if (inventory.length === 0) {
+                tampilkanError('Tidak ada item untuk dihapus.');
+                return;
+            }
+            
+            if (confirm('Yakin ingin menghapus semua item?')) {
+                inventory = [];
+                saveInventory();
+                renderInventory();
+                updateStats();
+                tampilkanSukses('Semua item dihapus.');
+            }
+        }
+
+        function renderInventory() {
+            if (inventory.length === 0) {
+                inventoryList.innerHTML = '<div class="empty-state"><div class="empty-state-icon">📦</div><p>Belum ada produk tersimpan</p><small>Mulai dengan merekam produk pertama Anda</small></div>';
+                return;
+            }
+            
+            const today = new Date();
+            today.setHours(0, 0, 0, 0);
+            
+            let html = '';
+            for (let i = 0; i < inventory.length; i++) {
+                const item = inventory[i];
+                const expiredDate = new Date(item.expired);
+                expiredDate.setHours(0, 0, 0, 0);
+                
+                const diffTime = expiredDate - today;
+                const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+                
+                var badgeClass = 'safe';
+                var badgeText = '';
+                var itemClass = '';
+                
+                if (diffDays < 0) {
+                    badgeClass = 'expired';
+                    badgeText = 'Terlewat ' + Math.abs(diffDays) + ' hari';
+                    itemClass = 'expired';
+                } else if (diffDays === 0) {
+                    badgeClass = 'expired';
+                    badgeText = 'Hari ini';
+                    itemClass = 'expired';
+                } else if (diffDays <= 3) {
+                    badgeClass = 'warning';
+                    badgeText = diffDays + ' hari lagi';
+                    itemClass = 'warning';
+                } else {
+                    badgeText = diffDays + ' hari lagi';
+                }
+                
+                const kategoriLabel = item.kategori.charAt(0).toUpperCase() + item.kategori.slice(1);
+                const tanggalDisplay = formatTanggalDisplay(item.expired);
+                
+                html += '<div class="inventory-item ' + itemClass + '">';
+                html += '<div class="item-info">';
+                html += '<h4>' + item.nama + '</h4>';
+                html += '<p>' + item.jumlah + ' ' + item.satuan + ' | ' + kategoriLabel + ' | Exp: ' + tanggalDisplay + '</p>';
+                html += '</div>';
+                html += '<div class="item-meta">';
+                html += '<span class="countdown-badge ' + badgeClass + '">' + badgeText + '</span>';
+                html += '<button class="item-delete" onclick="hapusItem(' + item.id + ')">Hapus</button>';
+                html += '</div>';
+                html += '</div>';
+            }
+            
+            inventoryList.innerHTML = html;
+        }
+
+        function formatTanggalDisplay(isoDate) {
+            const date = new Date(isoDate);
+            const options = { day: 'numeric', month: 'short', year: 'numeric' };
+            return date.toLocaleDateString('id-ID', options);
+        }
+
+        function updateStats() {
+            const today = new Date();
+            today.setHours(0, 0, 0, 0);
+            
+            var warning = 0;
+            var expired = 0;
+            
+            for (let i = 0; i < inventory.length; i++) {
+                const item = inventory[i];
+                const expiredDate = new Date(item.expired);
+                expiredDate.setHours(0, 0, 0, 0);
+                const diffDays = Math.ceil((expiredDate - today) / (1000 * 60 * 60 * 24));
+                
+                if (diffDays < 0) {
+                    expired++;
+                } else if (diffDays <= 3) {
+                    warning++;
+                }
+            }
+            
+            statTotal.innerText = inventory.length;
+            statWarning.innerText = warning;
+            statExpired.innerText = expired;
+        }
+
+        // ============================================
+        // UI HELPERS
+        // ============================================
+
+        function resetInput() {
+            transcriptDisplay.innerText = 'Klik "Mulai Rekam" dan ucapkan produk Anda';
+            resetForm();
+            btnRetry.style.display = 'none';
+            btnSave.style.display = 'none';
+            statusMsg.style.display = 'none';
+            finalTranscript = '';
+        }
+
+        function resetForm() {
+            outName.value = '';
+            outCategory.value = '';
+            outAmount.value = '';
+            outUnit.value = '';
+            outDate.value = '';
+        }
+
+        function tampilkanError(pesan) {
+            statusMsg.innerText = pesan;
+            statusMsg.className = 'status-msg error';
+            statusMsg.style.display = 'block';
+        }
+
+        function tampilkanSukses(pesan) {
+            statusMsg.innerText = pesan;
+            statusMsg.className = 'status-msg success';
+            statusMsg.style.display = 'block';
+        }
+
+        // ============================================
+        // START APP
+        // ============================================
+        
+        init();
+
+    </script>
+</body>
+</html>
